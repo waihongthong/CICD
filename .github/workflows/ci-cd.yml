@@ -50,11 +50,26 @@ jobs:
           build-args: APP_VERSION=${{ github.sha }}
 
   # ---------- CD: deploy to Kubernetes ----------
-  deploy:
+  deploy-staging:
     needs: build
     runs-on: self-hosted
+    environment: staging
     steps:
-      - name: Deploy
+      - name: Deploy to staging
         run: |
-          kubectl set image deployment/cicd-demo app=${{ needs.build.outputs.image }}
-          kubectl rollout status deployment/cicd-demo --timeout=120s
+          kubectl create namespace staging --dry-run=client -o yaml | kubectl apply -f -
+          kubectl apply -n staging -f C:\Users\User\Desktop\cicd-demo\k8s\
+          kubectl set image deployment/cicd-demo app=${{ needs.build.outputs.image }} -n staging
+          kubectl rollout status deployment/cicd-demo -n staging --timeout=120s
+
+  deploy-production:
+    needs: deploy-staging
+    runs-on: self-hosted
+    environment: production
+    steps:
+      - name: Deploy to production
+        run: |
+          kubectl create namespace production --dry-run=client -o yaml | kubectl apply -f -
+          kubectl apply -n production -f C:\Users\User\Desktop\cicd-demo\k8s\
+          kubectl set image deployment/cicd-demo app=${{ needs.build.outputs.image }} -n production
+          kubectl rollout status deployment/cicd-demo -n production --timeout=120s
