@@ -52,11 +52,9 @@ jobs:
   # ---------- CD: deploy to Kubernetes ----------
   deploy:
     needs: build
-    runs-on: self-hosted     # use [self-hosted] if your cluster is local (kind/minikube)
+    runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
       - name: Deploy
         run: |
-          kubectl apply -f k8s/
           kubectl set image deployment/cicd-demo app=${{ needs.build.outputs.image }}
           kubectl rollout status deployment/cicd-demo --timeout=120s
