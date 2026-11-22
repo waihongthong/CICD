@@ -7,7 +7,7 @@ VERSION = os.getenv("APP_VERSION", "dev")
 
 @app.route("/")
 def home():
-    return jsonify(message="Hello from CI/CD on Kubernetes!", version=VERSION)
+    return jsonify(message="This is second version from CICD pipeline. Hello from CI/CD on Kubernetes!", version=VERSION)
 
 
 @app.route("/health")
