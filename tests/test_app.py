@@ -4,7 +4,7 @@ from app import app
 def test_home():
     res = app.test_client().get("/")
     assert res.status_code == 200
-    assert "Hello v2" in res.get_json()["message"]
+    assert "second version" in res.get_json()["message"]
 
 
 def test_health():
